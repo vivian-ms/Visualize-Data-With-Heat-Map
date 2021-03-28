@@ -29,19 +29,33 @@ function createCanvas(data) {
               .attr('transform', `translate(${xPadding}, ${yPadding / 5})`);
 
   createBars(svg, data);
-}
+}  // End createCanvas()
 
 
 function createBars(svg, {baseTemperature, monthlyVariance}) {
+  let minYr = d3.min(monthlyVariance, d => new Date(`${d.year} 00:00`));
+  let maxYr = d3.max(monthlyVariance, d => new Date(`${d.year} 00:00`));
+  let bar_width = w / (maxYr.getFullYear() - minYr.getFullYear() + 1);
+
   let xScale = d3.scaleTime()
-                 .domain([
-                   d3.min(monthlyVariance, d => new Date(`${d.year} 00:00`)),
-                   d3.max(monthlyVariance, d => new Date(`${d.year} 00:00`))
-                 ])
+                 .domain([minYr, maxYr])
                  .range([0, w]);
   let yScale = d3.scaleBand()
                  .domain(monthlyVariance.map(d => months[d.month - 1]))
                  .range([0, h]);
+
+  svg.selectAll('rect')
+    .data(monthlyVariance)
+    .enter()
+    .append('rect')
+    .attr('x', d => xScale(new Date(`${d.year} 00:00`)))
+    .attr('y', d => yScale(months[d.month - 1]))
+    .attr('width', bar_width)
+    .attr('height', yScale.bandwidth())
+    .attr('data-year', d => d.year)
+    .attr('data-month', d => d.month - 1)
+    .attr('data-temp', d => baseTemperature + d.variance)
+    .classed('cell', true);
 
   createAxes(svg, xScale, yScale);
 }  // End createBars()

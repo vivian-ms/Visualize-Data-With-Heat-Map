@@ -9,6 +9,8 @@ window.onload = () => {
   fetch(resource)
     .then(response => response.json())
     .then(data => {
+      document.querySelector('#yr_range').innerHTML = `${d3.min(data.monthlyVariance, d => d.year)} - ${d3.max(data.monthlyVariance, d => d.year)}`;
+      document.querySelector('#baseTemp').innerHTML = `${data.baseTemperature}°C`;
       createCanvas(data);
     })
     .catch(err => {

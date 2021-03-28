@@ -65,6 +65,11 @@ function createBars(svg, {baseTemperature, monthlyVariance}) {
                       d3.max(monthlyVariance, d => baseTemperature + d.variance)])
                     .range(colors);
 
+  let tooltip = d3.select('#svg_container')
+                  .append('div')
+                  .attr('id', 'tooltip')
+                  .style('opacity', 0);
+
   svg.selectAll('rect')
     .data(monthlyVariance)
     .enter()
@@ -79,7 +84,33 @@ function createBars(svg, {baseTemperature, monthlyVariance}) {
     .attr('data-year', d => d.year)
     .attr('data-month', d => d.month - 1)
     .attr('data-temp', d => baseTemperature + d.variance)
-    .classed('cell', true);
+    .classed('cell', true)
+    .on('mouseover', (evt, d) => {
+      let variance = d.variance < 0 ? `${(d.variance).toFixed(2)}` : `+${(d.variance).toFixed(2)}`;
+
+      d3.select(evt.currentTarget).transition()
+        .duration(50)
+        .attr('stroke', 'black')
+        .attr('stroke-width', 1);
+
+      tooltip.transition()
+             .duration(50)
+             .style('opacity', 1)
+             .style('left', `${d3.select(evt.currentTarget).attr('x')}px`)
+             .style('top', `${d3.select(evt.currentTarget).attr('y') - 50}px`);
+      tooltip.attr('data-year', d.year)
+             .html(`${months[d.month - 1]} ${d.year} <br /> ${(baseTemperature + d.variance).toFixed(2)}°C (${variance}°C)`);
+    })
+    .on('mouseout', (evt, d) => {
+      d3.select(evt.currentTarget).transition()
+        .duration(50)
+        .attr('stroke', 'lightgrey')
+        .attr('stroke-width', 0.06);
+
+      tooltip.transition()
+             .duration(50)
+             .style('opacity', 0);
+    });
 
   createAxes(svg, xScale, yScale);
 }  // End createBars()

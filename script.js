@@ -3,6 +3,7 @@ const w = 1250;
 const h = 400;
 const xPadding = 75;
 const yPadding = 80;
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 
 window.onload = () => {
@@ -26,4 +27,19 @@ function createCanvas(data) {
               .attr('height',h + 2 * yPadding)
               .append('g')
               .attr('transform', `translate(${xPadding}, ${yPadding / 5})`);
+
+  createBars(svg, data);
 }
+
+
+function createBars(svg, {baseTemperature, monthlyVariance}) {
+  let xScale = d3.scaleTime()
+                 .domain([
+                   d3.min(monthlyVariance, d => new Date(`${d.year} 00:00`)),
+                   d3.max(monthlyVariance, d => new Date(`${d.year} 00:00`))
+                 ])
+                 .range([0, w]);
+  let yScale = d3.scaleBand()
+                 .domain(monthlyVariance.map(d => months[d.month - 1]))
+                 .range([0, h]);
+}  // End createBars()

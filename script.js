@@ -42,4 +42,20 @@ function createBars(svg, {baseTemperature, monthlyVariance}) {
   let yScale = d3.scaleBand()
                  .domain(monthlyVariance.map(d => months[d.month - 1]))
                  .range([0, h]);
+
+  createAxes(svg, xScale, yScale);
 }  // End createBars()
+
+
+function createAxes(svg, xScale, yScale) {
+  let xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat('%Y')).ticks(d3.timeYear.every(10));
+  svg.append('g')
+     .attr('id', 'x-axis')
+     .attr('transform', `translate(0, ${h})`)
+     .call(xAxis);
+
+  let yAxis = d3.axisLeft(yScale);
+  svg.append('g')
+     .attr('id', 'y-axis')
+     .call(yAxis);
+}  // End createAxes()

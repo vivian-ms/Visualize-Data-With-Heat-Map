@@ -4,6 +4,21 @@ const h = 400;
 const xPadding = 75;
 const yPadding = 80;
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const colors = [
+  '#0080ff',
+  '#2a95d4',
+  '#55aaaa',
+  '#7fbf7f',
+  '#aad455',
+  '#d4e92a',
+  '#ffff00',
+  '#ffd400',
+  '#ffaa00',
+  '#ff7f00',
+  '#ff5500',
+  '#ff2a00',
+  '#ff0000'
+]  // Source: http://www.zonums.com/online/color_ramp/
 
 
 window.onload = () => {
@@ -44,6 +59,12 @@ function createBars(svg, {baseTemperature, monthlyVariance}) {
                  .domain(monthlyVariance.map(d => months[d.month - 1]))
                  .range([0, h]);
 
+  let colorScale = d3.scaleQuantize()
+                    .domain([
+                      d3.min(monthlyVariance, d => baseTemperature + d.variance),
+                      d3.max(monthlyVariance, d => baseTemperature + d.variance)])
+                    .range(colors);
+
   svg.selectAll('rect')
     .data(monthlyVariance)
     .enter()
@@ -52,6 +73,9 @@ function createBars(svg, {baseTemperature, monthlyVariance}) {
     .attr('y', d => yScale(months[d.month - 1]))
     .attr('width', bar_width)
     .attr('height', yScale.bandwidth())
+    .attr('fill', d => colorScale(baseTemperature + d.variance))
+    .attr('stroke', 'lightgrey')
+    .attr('stroke-width', 0.06)
     .attr('data-year', d => d.year)
     .attr('data-month', d => d.month - 1)
     .attr('data-temp', d => baseTemperature + d.variance)

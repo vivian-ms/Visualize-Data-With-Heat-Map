@@ -113,6 +113,7 @@ function createBars(svg, {baseTemperature, monthlyVariance}) {
     });
 
   createAxes(svg, xScale, yScale);
+  createLegend(svg, colorScale);
 }  // End createBars()
 
 
@@ -128,3 +129,31 @@ function createAxes(svg, xScale, yScale) {
      .attr('id', 'y-axis')
      .call(yAxis);
 }  // End createAxes()
+
+
+function createLegend(svg, scale) {
+  let legend = svg.append('g')
+                  .attr('id', 'legend')
+                  .attr('transform', `translate(10, ${h + 60})`);
+  legend.append('text')
+        .attr('x', 0)
+        .attr('y', 0)
+        .text('Land Surface Temperature')
+  legend.selectAll('rect')
+        .data(colors)
+        .enter()
+        .append('rect')
+        .attr('x', (d, i) => i * 45)
+        .attr('y', 10)
+        .attr('fill', d => d);
+  for (let i = 0; i <= colors.length; i++) {
+    legend.append('text')
+          .classed('values', true)
+          .attr('x', i * 45)
+          .attr('y', 65)
+          .text(() => {
+            return i === colors.length ?
+            `${(scale.invertExtent(colors[i - 1])[1]).toFixed(2)}°C` : `${(scale.invertExtent(colors[i])[0]).toFixed(2)}°C`;
+          });
+  }
+}  // End createLegend()

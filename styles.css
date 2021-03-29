@@ -11,6 +11,14 @@ h1, h2 {
   position: relative;
 }
 
+#x-axis, #y-axis {
+  font-size: 0.75rem;
+}
+
+footer {
+  font-size: 0.8rem;
+}
+
 #tooltip {
   position: absolute;
   width: 140px;
@@ -20,4 +28,18 @@ h1, h2 {
   background: rgba(106, 90, 205, 0.85);
   text-align: center;
   font-weight: bold;
+}
+
+#legend {
+  font-weight: bold;
+}
+
+#legend rect {
+  width: 45px;
+  height: 45px;
+}
+
+.values {
+  text-anchor: middle;
+  font-size: 0.7rem;
 }
